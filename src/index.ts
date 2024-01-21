@@ -10,10 +10,11 @@ const setFailed = (message: string | Error) => {
   process.exit(1);
 }
 
-const parseInputs = (): [string[], string[], string | undefined] => {
+const parseInputs = (): [string[], string[], string | undefined, string | undefined] => {
   let sourcePaths = core.getInput("source_paths");
   let outputPaths = core.getInput("output_paths", { required: false });
   let fontsPath = core.getInput("fonts_path", { required: false });
+  let rootPath = core.getInput("root_path", { required: false });
 
   if (!sourcePaths) {
     setFailed(`Argument: 'source_paths' is required!`)
@@ -53,14 +54,16 @@ const parseInputs = (): [string[], string[], string | undefined] => {
     }
   }
 
-  return [srcPaths, outPaths, fp];
+  let rp = path.join(PATH, rootPath);
+
+  return [srcPaths, outPaths, fp, rp];
 }
 
 
 
 (async () => {
   try {
-    const [source, outputs, fontsPath] = parseInputs();
+    const [source, outputs, fontsPath, rootPath] = parseInputs();
 
     for (let i = 0; i < source.length; i++) {
       const src = source[i];
@@ -68,6 +71,9 @@ const parseInputs = (): [string[], string[], string | undefined] => {
       let cmd = "typst compile ";
       if (fontsPath) {
         cmd += `--font-path ${fontsPath} `
+      }
+      if (rootPath) {
+        cmd += `--root ${rootPath} `
       }
       cmd += `${src} ${out}`
       const res = execSync(cmd);

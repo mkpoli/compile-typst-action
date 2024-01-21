@@ -21,3 +21,4 @@ runs:
     - ${{ inputs.source_paths }}
     - ${{ inputs.output_paths }}
     - ${{ inputs.fonts_path }}
+    - ${{ inputs.root_path }}
